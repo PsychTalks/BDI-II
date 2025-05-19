@@ -6,6 +6,10 @@
     <title>Enhanced Interactive BDI-II Questionnaire</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Add Font Awesome for social media icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Add html2canvas for JPG export -->
+    <script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -80,16 +84,49 @@
             font-weight: 600; 
             padding: 0.75rem 1.5rem; 
             border-radius: 0.5rem; 
-            transition: background-color 0.2s ease-in-out, transform 0.1s ease-in-out;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
             border: none;
             cursor: pointer;
             display: inline-flex;
             align-items: center;
             justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .app-button::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
         }
         .app-button:hover {
             background-color: #009e51; 
-            transform: translateY(-1px);
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 190, 97, 0.2);
+        }
+        .app-button:focus:not(:active)::after {
+            animation: ripple 1s ease-out;
+        }
+        @keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            20% {
+                transform: scale(25, 25);
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
         }
         .app-button:disabled {
             background-color: rgba(0, 190, 97, 0.5); 
@@ -102,6 +139,19 @@
         }
         .app-button.secondary:hover {
             background-color: #0a2532; 
+            box-shadow: 0 5px 15px rgba(13, 50, 66, 0.2);
+        }
+        .app-button.tertiary {
+            background-color: transparent;
+            color: #0d3242;
+            border: 1px solid #0d3242;
+        }
+        .app-button.tertiary:hover {
+            background-color: rgba(13, 50, 66, 0.05);
+            box-shadow: 0 2px 8px rgba(13, 50, 66, 0.1);
+        }
+        .app-button i {
+            margin-right: 0.5rem;
         }
 
         .results-card {
@@ -232,6 +282,598 @@
             margin-top: 0.5rem;
             filter: drop-shadow(0 1px 2px rgba(13, 50, 66, 0.1));
         }
+        
+        /* New styles for BDI-II info card */
+        .bdi-info-card {
+            background-color: #f0f9ff;
+            border: 1px solid #bae6fd;
+            border-radius: 0.5rem;
+            padding: 1rem;
+            margin-top: 1.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .bdi-info-card h3 {
+            color: #0369a1;
+            font-weight: 600;
+            font-size: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .bdi-info-card h3 i {
+            margin-right: 0.5rem;
+        }
+        
+        .bdi-info-content {
+            font-size: 0.875rem;
+            color: #0c4a6e;
+        }
+        
+        /* Styles for share buttons */
+        .share-container {
+            margin-top: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .share-title {
+            font-size: 1rem;
+            font-weight: 600;
+            color: #0d3242;
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+        }
+        
+        .share-title i {
+            margin-right: 0.5rem;
+        }
+        
+        .share-buttons {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .share-button {
+            width: 2.5rem;
+            height: 2.5rem;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.25rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .share-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateY(100%);
+            transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1;
+        }
+        
+        .share-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .share-button:hover::before {
+            transform: translateY(0);
+        }
+        
+        .share-button i {
+            position: relative;
+            z-index: 2;
+        }
+        
+        .share-facebook {
+            background-color: #1877f2;
+        }
+        
+        .share-twitter {
+            background-color: #1da1f2;
+        }
+        
+        .share-linkedin {
+            background-color: #0077b5;
+        }
+        
+        .share-whatsapp {
+            background-color: #25d366;
+        }
+        
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+        
+        .download-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            background-color: #0d3242;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .download-button:hover {
+            background-color: #0a2532;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(13, 50, 66, 0.2);
+        }
+        
+        /* Toast notification for download success */
+        .toast-notification {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100%);
+            background-color: #00be61;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            z-index: 100;
+        }
+        
+        .toast-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+        
+        /* Modal for image preview */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            max-width: 90%;
+            max-height: 90%;
+            overflow: auto;
+            position: relative;
+            transform: scale(0.9);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        
+        .modal-overlay.show .modal-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        .modal-close {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            color: #0d3242;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        
+        .modal-close:hover {
+            color: #ff5e6d;
+        }
+        
+        .result-image-container {
+            text-align: center;
+        }
+        
+        .result-image {
+            max-width: 100%;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .modal-actions {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+        
+        /* Loading spinner */
+        .loading-spinner {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* Results card for capture */
+        #resultsCapture {
+            background: #e8f8f0 !important;
+            border-radius: 18px;
+            padding: 2.5rem 1.5rem 2rem 1.5rem;
+            max-width: 520px;
+            margin: 0 auto;
+            box-shadow: 0 2px 16px rgba(13, 50, 66, 0.10);
+            border: none;
+        }
+        
+        .capture-header {
+            text-align: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .capture-title {
+            font-size: 2.1rem;
+            font-weight: 700;
+            color: #0d3242;
+            margin-bottom: 0.2rem;
+        }
+        
+        .capture-subtitle {
+            font-size: 1rem;
+            color: #00be61;
+            margin-bottom: 0.5rem;
+        }
+        
+        .capture-score-interpretation-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+        
+        .capture-score-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #0d3242;
+            text-align: center;
+            margin-bottom: 1.1rem;
+        }
+        
+        .capture-interpretation {
+            font-size: 1.1rem;
+            font-weight: 600;
+            background: #d1fae5;
+            color: #059669;
+            border-radius: 10px;
+            padding: 0.85rem 1rem;
+            margin-bottom: 0.5rem;
+            text-align: center;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+        
+        .capture-chart-card {
+            background: #fff;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(13, 50, 66, 0.08);
+            padding: 1.2rem 1rem 1.5rem 1rem;
+            margin: 0 auto 1.5rem auto;
+            max-width: 98%;
+        }
+        
+        .capture-chart-card .chart-title {
+            font-weight: 700;
+            color: #0d3242;
+            margin-bottom: 1.1rem;
+            font-size: 1.1rem;
+            text-align: center;
+        }
+        
+        .capture-footer {
+            text-align: center;
+            font-size: 0.85rem;
+            color: #0d3242;
+            margin-top: 1.5rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e2e8f0;
+        }
+        
+        .capture-logo {
+            height: 1.5rem;
+            margin-top: 0.5rem;
+        }
+        
+        /* Back button */
+        .back-button {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+            color: #0d3242;
+            font-weight: 500;
+            cursor: pointer;
+            transition: color 0.2s ease;
+        }
+        
+        .back-button:hover {
+            color: #00be61;
+        }
+        
+        .back-button i {
+            font-size: 1.25rem;
+        }
+
+        /* Question category styling */
+        .symptom-category {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #0d3242;
+            margin-bottom: 0.5rem;
+        }
+
+        .category-name {
+            color: #00be61;
+            font-weight: 700;
+        }
+
+        .question-instruction {
+            font-size: 0.95rem;
+            color: #4b5563;
+            margin-bottom: 1.25rem;
+            font-style: italic;
+        }
+
+        /* Modernized chart styling - enhanced for better visualization */
+        .modern-chart-container {
+            margin-top: 1.5rem;
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: #f8f9fa;
+            border-radius: 0.75rem;
+            box-shadow: 0 2px 10px rgba(13, 50, 66, 0.1);
+        }
+
+        .chart-title {
+            font-weight: 600;
+            color: #0d3242;
+            margin-bottom: 1.25rem;
+            font-size: 1rem;
+            text-align: center;
+        }
+
+        /* Column chart styling */
+        .column-chart {
+            display: flex;
+            height: 200px;
+            align-items: flex-end;
+            justify-content: space-around;
+            margin: 0 10px;
+            position: relative;
+        }
+
+        .column {
+            width: 22%;
+            position: relative;
+            border-radius: 6px 6px 0 0;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            display: flex;
+            justify-content: center;
+        }
+
+        .column:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .column-label {
+            position: absolute;
+            bottom: -25px;
+            text-align: center;
+            width: 100%;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #333;
+        }
+
+        .column-value {
+            position: absolute;
+            top: -25px;
+            text-align: center;
+            width: 100%;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #333;
+        }
+
+        .column-minimal {
+            background-color: #00be61;
+        }
+
+        .column-mild {
+            background-color: #4c9aff;
+        }
+
+        .column-moderate {
+            background-color: #ffaa42;
+        }
+
+        .column-severe {
+            background-color: #ff5e6d;
+        }
+
+        .your-score-marker {
+            position: absolute;
+            height: 100%;
+            width: 3px;
+            background-color: #0d3242;
+            z-index: 10;
+            transition: all 0.3s ease;
+        }
+
+        .your-score-label {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #0d3242;
+            color: white;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.85rem;
+            white-space: nowrap;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .your-score-label::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #0d3242 transparent transparent transparent;
+        }
+
+        .score-axis {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 1px;
+            background-color: #ccc;
+            bottom: 0;
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            justify-content: center;
+            margin-top: 1rem;
+        }
+
+        .app-button {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .toast-notification {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%) translateY(100%);
+            background-color: #00be61;
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            opacity: 0;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+            z-index: 100;
+        }
+
+        .toast-notification.show {
+            transform: translateX(-50%) translateY(0);
+            opacity: 1;
+        }
+
+        @media (max-width: 640px) {
+            .column {
+                width: 20%;
+            }
+            
+            .column-label {
+                font-size: 0.7rem;
+            }
+            
+            .column-value {
+                font-size: 0.7rem;
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-buttons button {
+                width: 100%;
+            }
+            
+            .modern-chart-container {
+                padding: 1rem 0.5rem;
+            }
+            
+            .column-chart {
+                height: 150px;
+            }
+        }
+
+        /* Add this to the <style> section */
+        .capture-score-interpretation-wrapper {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            width: 100%;
+            margin-bottom: 1.5rem;
+        }
+
+        .capture-score-value, .capture-interpretation {
+            width: 100%;
+            max-width: 420px;
+            box-sizing: border-box;
+            text-align: center;
+            margin-left: auto;
+            margin-right: auto;
+        }
     </style>
 </head>
 <body class="antialiased text-gray-800 min-h-screen flex flex-col items-center p-4 sm:p-6">
@@ -267,8 +909,8 @@
                     If you are in crisis, please contact emergency services or a crisis hotline.
                 </p>
             </div>
-            <div class="text-center">
-                <button id="startButton" class="app-button">Start Assessment</button>
+            <div class="flex justify-center">
+                <button id="startButton" class="app-button"><i class="fas fa-play"></i> Start Assessment</button>
             </div>
         </div>
 
@@ -277,30 +919,30 @@
                 </div>
             <div id="validationMessage" class="mt-3 mb-2 p-3 bg-red-100 border border-red-300 text-red-700 rounded-md text-sm hidden-view"></div>
             <div class="mt-6 flex justify-between items-center">
-                <button id="prevButton" class="app-button secondary">&lt; Previous</button>
-                <button id="nextButton" class="app-button">Next &gt;</button>
+                <button id="prevButton" class="app-button secondary"><i class="fas fa-chevron-left"></i> Previous</button>
+                <button id="nextButton" class="app-button">Next <i class="fas fa-chevron-right"></i></button>
             </div>
         </div>
 
         <div id="resultsView" class="content-card results-card hidden-view">
-            <h2 class="section-title results-title">Your Results</h2>
+            <div class="back-button" id="backToQuestions">
+                <i class="fas fa-arrow-left"></i> Back to Questions
+            </div>
+            
             <div class="text-center mb-4 score-display-area">
                 <p id="scoreValue" class="score-value">Your Score: 0 out of 63</p>
                 <p id="scoreInterpretation" class="interpretation-text"></p>
             </div>
 
-            <div class="level-indicator-container">
-                <h3 class="text-md font-semibold text-gray-700 mb-2">Score Visualization:</h3>
-                <div class="relative"> 
-                    <div id="scoreLevels">
-                        </div>
-                    <div id="yourScoreMarkerContainer" class="your-score-marker-container">
-                        <div id="yourScoreText" class="your-score-text">0</div>
-                        <div id="yourScoreMarker" class="your-score-marker"></div>
-                    </div>
+            <!-- New Column Chart for Score Interpretation -->
+            <div class="modern-chart-container">
+                <div class="chart-title">Score Interpretation</div>
+                <div id="columnChart" class="column-chart">
+                    <!-- Will be filled by JavaScript -->
+                    <div class="score-axis"></div>
                 </div>
             </div>
-            
+
             <table class="results-table">
                 <thead>
                     <tr>
@@ -309,16 +951,83 @@
                     </tr>
                 </thead>
                 <tbody id="interpretationTableBody">
-                    </tbody>
+                    <!-- Will be filled by JavaScript -->
+                </tbody>
             </table>
 
-             <p class="mt-6 text-xs text-[#0d3242]">
+            <!-- New BDI-II Information Section -->
+            <div class="bdi-info-card">
+                <h3><i class="fas fa-info-circle"></i> About the BDI-II</h3>
+                <div class="bdi-info-content">
+                    <p>The Beck Depression Inventory-II (BDI-II) is a widely used 21-item self-report inventory measuring the severity of depression in adolescents and adults. Developed by Dr. Aaron T. Beck and colleagues, it assesses symptoms corresponding to criteria for diagnosing depressive disorders listed in the DSM-IV. The BDI-II is designed to identify the presence and severity of symptoms consistent with depression, not to formulate a clinical diagnosis.</p>
+                </div>
+            </div>
+
+            <!-- Share and Download Section - updated as requested -->
+            <div class="share-container">
+                <div class="action-buttons">
+                    <button id="generateImageBtn" class="app-button">
+                        <i class="fas fa-download"></i> Download Result
+                    </button>
+                    <button id="copyLinkBtn" class="app-button tertiary">
+                        <i class="fas fa-link"></i> Copy Test Link
+                    </button>
+                    <button id="restartButton" class="app-button secondary">
+                        <i class="fas fa-redo"></i> Take Again
+                    </button>
+                </div>
+            </div>
+
+            <p class="mt-6 text-xs text-[#0d3242] text-center">
                 <strong>Note:</strong> These score ranges are typical, but interpretations may vary. This tool does not provide a diagnosis.
                 If you have concerns about your mood or mental health, please consult a healthcare professional.
             </p>
-            <div class="mt-8 text-center">
-                <button id="restartButton" class="app-button">Take Again</button>
+        </div>
+
+        <!-- Hidden div for image capture -->
+        <div id="resultsCapture" class="hidden-view">
+            <div class="capture-header">
+                <div class="capture-title">BDI-II Assessment Results</div>
+                <div class="capture-subtitle">Beck Depression Inventory - II</div>
             </div>
+            <div class="capture-score-interpretation-wrapper">
+                <div id="captureScoreValue" class="capture-score-value">Your Score: 0 out of 63</div>
+                <div id="captureInterpretation" class="capture-interpretation">Interpretation text will appear here.</div>
+            </div>
+            <div class="capture-chart-card" id="captureChartCard">
+                <div class="chart-title">Score Interpretation</div>
+                <div id="captureScoreLevels"></div>
+            </div>
+            <div class="capture-footer">
+                <p>Assessment completed on <span id="captureDate"></span></p>
+                <p>This is for informational purposes only and not a clinical diagnosis.</p>
+                <div class="flex justify-center mt-2">
+                    <img src="https://raw.githubusercontent.com/PsychTalks/assets/363231be8d929887eb25f9b811981a44110a4088/Asset%201gg.png" alt="PsychTalks Logo" class="capture-logo">
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal for image preview -->
+        <div id="imageModal" class="modal-overlay">
+            <div class="modal-content">
+                <button id="modalClose" class="modal-close">&times;</button>
+                <div class="result-image-container">
+                    <img id="resultImage" class="result-image" src="" alt="Your BDI-II Results">
+                </div>
+                <div class="modal-actions">
+                    <button id="downloadImageBtn" class="app-button">
+                        <i class="fas fa-download"></i> Download Image
+                    </button>
+                    <button id="shareImageBtn" class="app-button secondary">
+                        <i class="fas fa-share-alt"></i> Share Image
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Toast notification for actions -->
+        <div id="toastNotification" class="toast-notification">
+            Action completed successfully!
         </div>
 
         <footer class="mt-10 mb-6 text-center text-xs text-[#0d3242]">
@@ -334,7 +1043,27 @@
     <script>
         // --- Configuration & Data ---
         const questions = [
-            { id: 1, title: "Sadness", statements: [ { text: "I do not feel sad.", score: 0 }, { text: "I feel sad much of the time.", score: 1 }, { text: "I am sad all the time.", score: 2 }, { text: "I am so sad or unhappy that I can't stand it.", score: 3 } ] }, { id: 2, title: "Pessimism", statements: [ { text: "I am not discouraged about my future.", score: 0 }, { text: "I feel more discouraged about my future than I used to.", score: 1 }, { text: "I do not expect things to work out for me.", score: 2 }, { text: "I feel my future is hopeless and will only get worse.", score: 3 } ] }, { id: 3, title: "Past Failure", statements: [ { text: "I do not feel like a failure.", score: 0 }, { text: "I have failed more than I should have.", score: 1 }, { text: "As I look back, I see a lot of failures.", score: 2 }, { text: "I feel I am a total failure as a person.", score: 3 } ] }, { id: 4, title: "Loss of Pleasure", statements: [ { text: "I get as much pleasure as I ever did from the things I enjoy.", score: 0 }, { text: "I don't enjoy things as much as I used to.", score: 1 }, { text: "I get very little pleasure from the things I used to enjoy.", score: 2 }, { text: "I can't get any pleasure from the things I used to enjoy.", score: 3 } ] }, { id: 5, title: "Guilty Feelings", statements: [ { text: "I don't feel particularly guilty.", score: 0 }, { text: "I feel guilty over many things I have done or should have done.", score: 1 }, { text: "I feel quite guilty most of the time.", score: 2 }, { text: "I feel guilty all of the time.", score: 3 } ] }, { id: 6, title: "Punishment Feelings", statements: [ { text: "I don't feel I am being punished.", score: 0 }, { text: "I feel I may be punished.", score: 1 }, { text: "I expect to be punished.", score: 2 }, { text: "I feel I am being punished.", score: 3 } ] }, { id: 7, title: "Self-Dislike", statements: [ { text: "I feel the same about myself as ever.", score: 0 }, { text: "I have lost confidence in myself.", score: 1 }, { text: "I am disappointed in myself.", score: 2 }, { text: "I dislike myself.", score: 3 } ] }, { id: 8, title: "Self-Criticalness", statements: [ { text: "I don't criticize or blame myself more than usual.", score: 0 }, { text: "I am more critical of myself than I used to be.", score: 1 }, { text: "I criticize myself for all of my faults.", score: 2 }, { text: "I blame myself for everything bad that happens.", score: 3 } ] }, { id: 9, title: "Suicidal Thoughts or Wishes", statements: [ { text: "I don't have any thoughts of killing myself.", score: 0 }, { text: "I have thoughts of killing myself, but I would not carry them out.", score: 1 }, { text: "I would like to kill myself.", score: 2 }, { text: "I would kill myself if I had the chance.", score: 3 } ] }, { id: 10, title: "Crying", statements: [ { text: "I don't cry anymore than I used to.", score: 0 }, { text: "I cry more than I used to.", score: 1 }, { text: "I cry over every little thing.", score: 2 }, { text: "I feel like crying, but I can't.", score: 3 } ] }, { id: 11, title: "Agitation", statements: [ { text: "I am no more restless or wound up than usual.", score: 0 }, { text: "I feel more restless or wound up than usual.", score: 1 }, { text: "I am so restless or agitated, it's hard to stay still.", score: 2 }, { text: "I am so restless or agitated that I have to keep moving or doing something.", score: 3 } ] }, { id: 12, title: "Loss of Interest", statements: [ { text: "I have not lost interest in other people or activities.", score: 0 }, { text: "I am less interested in other people or things than before.", score: 1 }, { text: "I have lost most of my interest in other people or things.", score: 2 }, { text: "It's hard to get interested in anything.", score: 3 } ] }, { id: 13, title: "Indecisiveness", statements: [ { text: "I make decisions about as well as ever.", score: 0 }, { text: "I find it more difficult to make decisions than usual.", score: 1 }, { text: "I have much greater difficulty in making decisions than I used to.", score: 2 }, { text: "I have trouble making any decisions.", score: 3 } ] }, { id: 14, title: "Worthlessness", statements: [ { text: "I do not feel I am worthless.", score: 0 }, { text: "I don't consider myself as worthwhile and useful as I used to.", score: 1 }, { text: "I feel more worthless as compared to others.", score: 2 }, { text: "I feel utterly worthless.", score: 3 } ] }, { id: 15, title: "Loss of Energy", statements: [ { text: "I have as much energy as ever.", score: 0 }, { text: "I have less energy than I used to have.", score: 1 }, { text: "I don't have enough energy to do very much.", score: 2 }, { text: "I don't have enough energy to do anything.", score: 3 } ] }, { id: 16, title: "Changes in Sleeping Pattern", statements: [ { text: "I have not experienced any change in my sleeping.", score: 0 }, { text: "I sleep somewhat more than usual. (1a)", score: 1 }, { text: "I sleep somewhat less than usual. (1b)", score: 1 }, { text: "I sleep a lot more than usual. (2a)", score: 2 }, { text: "I sleep a lot less than usual. (2b)", score: 2 }, { text: "I sleep most of the day. (3a)", score: 3 }, { text: "I wake up 1-2 hours early and can't get back to sleep. (3b)", score: 3 } ] }, { id: 17, title: "Irritability", statements: [ { text: "I am no more irritable than usual.", score: 0 }, { text: "I am more irritable than usual.", score: 1 }, { text: "I am much more irritable than usual.", score: 2 }, { text: "I am irritable all the time.", score: 3 } ] }, { id: 18, title: "Changes in Appetite", statements: [ { text: "I have not experienced any change in my appetite.", score: 0 }, { text: "My appetite is somewhat less than usual. (1a)", score: 1 }, { text: "My appetite is somewhat greater than usual. (1b)", score: 1 }, { text: "My appetite is much less than before. (2a)", score: 2 }, { text: "My appetite is much greater than usual. (2b)", score: 2 }, { text: "I have no appetite at all. (3a)", score: 3 }, { text: "I crave food all the time. (3b)", score: 3 } ] }, { id: 19, title: "Concentration Difficulty", statements: [ { text: "I can concentrate as well as ever.", score: 0 }, { text: "I can't concentrate as well as usual.", score: 1 }, { text: "It's hard to keep my mind on anything for very long.", score: 2 }, { text: "I find I can't concentrate on anything.", score: 3 } ] }, { id: 20, title: "Tiredness or Fatigue", statements: [ { text: "I am no more tired or fatigued than usual.", score: 0 }, { text: "I get more tired or fatigued more easily than usual.", score: 1 }, { text: "I am too tired or fatigued to do a lot of the things I used to do.", score: 2 }, { text: "I am too tired or fatigued to do most of the things I used to do.", score: 3 } ] }, { id: 21, title: "Loss of Interest in Sex", statements: [ { text: "I have not noticed any recent change in my interest in sex.", score: 0 }, { text: "I am less interested in sex than I used to be.", score: 1 }, { text: "I am much less interested in sex now.", score: 2 }, { text: "I have lost interest in sex completely.", score: 3 } ] }
+            { id: 1, category: "Sadness", category_bn: "দুঃখ", title: "Have you felt sad during the past two weeks, including today?", statements: [ { text: "I do not feel sad.", score: 0 }, { text: "I feel sad much of the time.", score: 1 }, { text: "I am sad all the time.", score: 2 }, { text: "I am so sad or unhappy that I can't stand it.", score: 3 } ] }, 
+            { id: 2, category: "Pessimism", category_bn: "নিরাশা", title: "Have you experienced pessimistic thoughts during the past two weeks, including today?", statements: [ { text: "I am not discouraged about my future.", score: 0 }, { text: "I feel more discouraged about my future than I used to.", score: 1 }, { text: "I do not expect things to work out for me.", score: 2 }, { text: "I feel my future is hopeless and will only get worse.", score: 3 } ] }, 
+            { id: 3, category: "Past Failure", category_bn: "ব্যর্থতা", title: "Have you felt like a failure during the past two weeks, including today?", statements: [ { text: "I do not feel like a failure.", score: 0 }, { text: "I have failed more than I should have.", score: 1 }, { text: "As I look back, I see a lot of failures.", score: 2 }, { text: "I feel I am a total failure as a person.", score: 3 } ] }, 
+            { id: 4, category: "Loss of Pleasure", category_bn: "আনন্দহীনতা", title: "Have you lost interest or pleasure in things during the past two weeks, including today?", statements: [ { text: "I get as much pleasure as I ever did from the things I enjoy.", score: 0 }, { text: "I don't enjoy things as much as I used to.", score: 1 }, { text: "I get very little pleasure from the things I used to enjoy.", score: 2 }, { text: "I can't get any pleasure from the things I used to enjoy.", score: 3 } ] }, 
+            { id: 5, category: "Guilty Feelings", category_bn: "অপরাধবোধ", title: "Have you felt guilty during the past two weeks, including today?", statements: [ { text: "I don't feel particularly guilty.", score: 0 }, { text: "I feel guilty over many things I have done or should have done.", score: 1 }, { text: "I feel quite guilty most of the time.", score: 2 }, { text: "I feel guilty all of the time.", score: 3 } ] }, 
+            { id: 6, category: "Punishment Feelings", category_bn: "শাস্তিপ্রাপ্তি", title: "Have you felt punished or that you deserve to be punished during the past two weeks, including today?", statements: [ { text: "I don't feel I am being punished.", score: 0 }, { text: "I feel I may be punished.", score: 1 }, { text: "I expect to be punished.", score: 2 }, { text: "I feel I am being punished.", score: 3 } ] }, 
+            { id: 7, category: "Self-Dislike", category_bn: "নিজেকে অপছন্দ", title: "Have you disliked yourself during the past two weeks, including today?", statements: [ { text: "I feel the same about myself as ever.", score: 0 }, { text: "I have lost confidence in myself.", score: 1 }, { text: "I am disappointed in myself.", score: 2 }, { text: "I dislike myself.", score: 3 } ] }, 
+            { id: 8, category: "Self-Criticalness", category_bn: "নিজেকে সমালোচনা", title: "Have you been self-critical during the past two weeks, including today?", statements: [ { text: "I don't criticize or blame myself more than usual.", score: 0 }, { text: "I am more critical of myself than I used to be.", score: 1 }, { text: "I criticize myself for all of my faults.", score: 2 }, { text: "I blame myself for everything bad that happens.", score: 3 } ] }, 
+            { id: 9, category: "Suicidal Thoughts", category_bn: "আত্মহত্যাচিন্তা", title: "Have you had thoughts or wishes about hurting yourself during the past two weeks, including today?", statements: [ { text: "I don't have any thoughts of killing myself.", score: 0 }, { text: "I have thoughts of killing myself, but I would not carry them out.", score: 1 }, { text: "I would like to kill myself.", score: 2 }, { text: "I would kill myself if I had the chance.", score: 3 } ] }, 
+            { id: 10, category: "Crying", category_bn: "অতিরিক্ত কান্না", title: "Have you cried more than usual during the past two weeks, including today?", statements: [ { text: "I don't cry anymore than I used to.", score: 0 }, { text: "I cry more than I used to.", score: 1 }, { text: "I cry over every little thing.", score: 2 }, { text: "I feel like crying, but I can't.", score: 3 } ] }, 
+            { id: 11, category: "Agitation", category_bn: "অস্থিরতা", title: "Have you felt restless or agitated during the past two weeks, including today?", statements: [ { text: "I am no more restless or wound up than usual.", score: 0 }, { text: "I feel more restless or wound up than usual.", score: 1 }, { text: "I am so restless or agitated, it's hard to stay still.", score: 2 }, { text: "I am so restless or agitated that I have to keep moving or doing something.", score: 3 } ] }, 
+            { id: 12, category: "Loss of Interest", category_bn: "আগ্রহ হারানো", title: "Have you lost interest in activities during the past two weeks, including today?", statements: [ { text: "I have not lost interest in other people or activities.", score: 0 }, { text: "I am less interested in other people or things than before.", score: 1 }, { text: "I have lost most of my interest in other people or things.", score: 2 }, { text: "It's hard to get interested in anything.", score: 3 } ] }, 
+            { id: 13, category: "Indecisiveness", category_bn: "সিদ্ধান্তহীনতা", title: "Have you had difficulty making decisions during the past two weeks, including today?", statements: [ { text: "I make decisions about as well as ever.", score: 0 }, { text: "I find it more difficult to make decisions than usual.", score: 1 }, { text: "I have much greater difficulty in making decisions than I used to.", score: 2 }, { text: "I have trouble making any decisions.", score: 3 } ] }, 
+            { id: 14, category: "Worthlessness", category_bn: "মূল্যহীনতা", title: "Have you felt worthless during the past two weeks, including today?", statements: [ { text: "I do not feel I am worthless.", score: 0 }, { text: "I don't consider myself as worthwhile and useful as I used to.", score: 1 }, { text: "I feel more worthless as compared to others.", score: 2 }, { text: "I feel utterly worthless.", score: 3 } ] }, 
+            { id: 15, category: "Loss of Energy", category_bn: "শক্তিহীনতা", title: "Have you experienced a loss of energy during the past two weeks, including today?", statements: [ { text: "I have as much energy as ever.", score: 0 }, { text: "I have less energy than I used to have.", score: 1 }, { text: "I don't have enough energy to do very much.", score: 2 }, { text: "I don't have enough energy to do anything.", score: 3 } ] }, 
+            { id: 16, category: "Changes in Sleeping Pattern", category_bn: "ঘুমের পরিবর্তন", title: "Have you noticed changes in your sleeping patterns during the past two weeks, including today?", statements: [ { text: "I have not experienced any change in my sleeping.", score: 0 }, { text: "I sleep somewhat more than usual. (1a)", score: 1 }, { text: "I sleep somewhat less than usual. (1b)", score: 1 }, { text: "I sleep a lot more than usual. (2a)", score: 2 }, { text: "I sleep a lot less than usual. (2b)", score: 2 }, { text: "I sleep most of the day. (3a)", score: 3 }, { text: "I wake up 1-2 hours early and can't get back to sleep. (3b)", score: 3 } ] }, 
+            { id: 17, category: "Irritability", category_bn: "রাগ", title: "Have you felt irritable during the past two weeks, including today?", statements: [ { text: "I am no more irritable than usual.", score: 0 }, { text: "I am more irritable than usual.", score: 1 }, { text: "I am much more irritable than usual.", score: 2 }, { text: "I am irritable all the time.", score: 3 } ] }, 
+            { id: 18, category: "Changes in Appetite", category_bn: "ক্ষুধার পরিবর্তন", title: "Have you noticed changes in your appetite during the past two weeks, including today?", statements: [ { text: "I have not experienced any change in my appetite.", score: 0 }, { text: "My appetite is somewhat less than usual. (1a)", score: 1 }, { text: "My appetite is somewhat greater than usual. (1b)", score: 1 }, { text: "My appetite is much less than before. (2a)", score: 2 }, { text: "My appetite is much greater than usual. (2b)", score: 2 }, { text: "I have no appetite at all. (3a)", score: 3 }, { text: "I crave food all the time. (3b)", score: 3 } ] }, 
+            { id: 19, category: "Concentration Difficulty", category_bn: "মনোযোগহীনতা", title: "Have you had trouble concentrating during the past two weeks, including today?", statements: [ { text: "I can concentrate as well as ever.", score: 0 }, { text: "I can't concentrate as well as usual.", score: 1 }, { text: "It's hard to keep my mind on anything for very long.", score: 2 }, { text: "I find I can't concentrate on anything.", score: 3 } ] }, 
+            { id: 20, category: "Tiredness or Fatigue", category_bn: "ক্লান্তি", title: "Have you felt tired or fatigued during the past two weeks, including today?", statements: [ { text: "I am no more tired or fatigued than usual.", score: 0 }, { text: "I get more tired or fatigued more easily than usual.", score: 1 }, { text: "I am too tired or fatigued to do a lot of the things I used to do.", score: 2 }, { text: "I am too tired or fatigued to do most of the things I used to do.", score: 3 } ] }, 
+            { id: 21, category: "Loss of Interest in Sex", category_bn: "যৌন আগ্রহহীনতা", title: "Have you lost interest in sex during the past two weeks, including today?", statements: [ { text: "I have not noticed any recent change in my interest in sex.", score: 0 }, { text: "I am less interested in sex than I used to be.", score: 1 }, { text: "I am much less interested in sex now.", score: 2 }, { text: "I have lost interest in sex completely.", score: 3 } ] }
         ];
 
         const scoreInterpretations = [
@@ -357,6 +1086,7 @@
         const prevButton = document.getElementById('prevButton');
         const nextButton = document.getElementById('nextButton');
         const restartButton = document.getElementById('restartButton');
+        const backToQuestionsBtn = document.getElementById('backToQuestions');
         const scoreValueEl = document.getElementById('scoreValue');
         const scoreInterpretationEl = document.getElementById('scoreInterpretation');
         const scoreLevelsEl = document.getElementById('scoreLevels');
@@ -366,138 +1096,139 @@
         const progressBarFill = document.getElementById('progressBarFill');
         const questionCounterEl = document.getElementById('questionCounter');
         const interpretationTableBodyEl = document.getElementById('interpretationTableBody');
+        const generateImageBtn = document.getElementById('generateImageBtn');
+        const toastNotification = document.getElementById('toastNotification');
+        const imageModal = document.getElementById('imageModal');
+        const modalClose = document.getElementById('modalClose');
+        const resultImage = document.getElementById('resultImage');
+        const downloadImageBtn = document.getElementById('downloadImageBtn');
+        const shareImageBtn = document.getElementById('shareImageBtn');
+        const resultsCapture = document.getElementById('resultsCapture');
+        const captureScoreValue = document.getElementById('captureScoreValue');
+        const captureInterpretation = document.getElementById('captureInterpretation');
+        const captureScoreLevels = document.getElementById('captureScoreLevels');
+        const captureScoreMarker = document.getElementById('captureScoreMarker');
+        const captureScoreText = document.getElementById('captureScoreText');
+        const captureDate = document.getElementById('captureDate');
 
-
-        // --- State ---
-        let currentView = 'intro'; 
+        // --- State Variables ---
         let currentQuestionIndex = 0;
         let answers = new Array(questions.length).fill(null);
         let autoAdvanceTimeout = null;
+        let resultImageUrl = null;
+        let totalScore = 0;
+        let resultInterpretation = null;
 
         // --- Functions ---
         function switchView(viewName) {
-            clearTimeout(autoAdvanceTimeout); // Clear any pending auto-advance
-
             introView.classList.add('hidden-view');
             questionsView.classList.add('hidden-view');
             resultsView.classList.add('hidden-view');
-            progressBarContainer.classList.add('hidden-view');
-            questionCounterEl.classList.add('hidden-view');
-            introView.classList.remove('fade-in');
-            questionsView.classList.remove('fade-in');
-            resultsView.classList.remove('fade-in');
-
-            currentView = viewName;
-            let activeView;
+            
             if (viewName === 'intro') {
-                activeView = introView;
+                introView.classList.remove('hidden-view');
+                progressBarContainer.classList.add('hidden-view');
+                questionCounterEl.classList.add('hidden-view');
             } else if (viewName === 'questions') {
-                activeView = questionsView;
+                questionsView.classList.remove('hidden-view');
                 progressBarContainer.classList.remove('hidden-view');
                 questionCounterEl.classList.remove('hidden-view');
-                renderQuestion();
+                renderCurrentQuestion();
+                updateProgressBar();
             } else if (viewName === 'results') {
-                activeView = resultsView;
-                progressBarContainer.classList.remove('hidden-view'); 
+                resultsView.classList.remove('hidden-view');
+                progressBarContainer.classList.remove('hidden-view');
+                questionCounterEl.classList.add('hidden-view');
                 calculateAndShowResults();
             }
-            if (activeView) {
-                activeView.classList.remove('hidden-view');
-                activeView.classList.add('fade-in');
-            }
-            updateProgressBar();
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
-        function renderQuestion() {
-            clearTimeout(autoAdvanceTimeout); // Clear previous auto-advance if any
+        function renderCurrentQuestion() {
             const question = questions[currentQuestionIndex];
-            questionContent.innerHTML = ''; 
-
-            const questionTitle = document.createElement('h3');
-            questionTitle.className = 'section-title';
-            questionTitle.textContent = `${question.id}. ${question.title}`;
-            questionContent.appendChild(questionTitle);
-
-            const statementsDiv = document.createElement('div');
-            statementsDiv.setAttribute('role', 'radiogroup');
-            statementsDiv.setAttribute('aria-labelledby', `question-title-${question.id}`);
-            questionTitle.id = `question-title-${question.id}`;
-
-            question.statements.forEach((statement, index) => {
+            questionContent.innerHTML = '';
+            
+            // Add the symptom category heading
+            const categoryEl = document.createElement('div');
+            categoryEl.className = 'symptom-category';
+            categoryEl.innerHTML = `Q${question.id}. Symptom category: <span class="category-name">${question.category}</span> <span style="font-size:0.85em;color:#666;margin-left:8px;">${question.category_bn || ''}</span>`;
+            questionContent.appendChild(categoryEl);
+            
+            // Add instruction subheading
+            const instructionEl = document.createElement('p');
+            instructionEl.className = 'question-instruction';
+            instructionEl.textContent = "Carefully choose the one statement that best describes how you have been feeling during the past two weeks, including today.";
+            questionContent.appendChild(instructionEl);
+            
+            const form = document.createElement('form');
+            form.id = `question-${question.id}-form`;
+            
+            question.statements.forEach((statement, idx) => {
                 const label = document.createElement('label');
                 label.className = 'statement-label';
+                
                 const radio = document.createElement('input');
                 radio.type = 'radio';
-                radio.name = `question_${question.id}`;
+                radio.name = `question-${question.id}`;
                 radio.value = statement.score;
-                radio.id = `q${question.id}_opt${index}`;
-                if (answers[currentQuestionIndex] === statement.score) {
-                    radio.checked = true;
-                }
+                radio.checked = answers[currentQuestionIndex] === statement.score;
                 radio.addEventListener('change', () => {
-                    answers[currentQuestionIndex] = parseInt(radio.value);
-                    validationMessage.classList.add('hidden-view'); 
+                    answers[currentQuestionIndex] = statement.score;
                     updateProgressBar();
-                    
-                    clearTimeout(autoAdvanceTimeout); // Clear existing timeout if user clicks again quickly
-                    autoAdvanceTimeout = setTimeout(() => {
-                        handleNext(true); // Pass true to indicate it's an auto-advance
-                    }, 750); // 750ms delay for auto-advance
+                    clearTimeout(autoAdvanceTimeout);
+                    autoAdvanceTimeout = setTimeout(() => handleNext(true), 800); // Auto-advance after selection
                 });
-
-                const span = document.createElement('span');
-                span.textContent = statement.text;
+                
                 label.appendChild(radio);
-                label.appendChild(span);
-                statementsDiv.appendChild(label);
+                label.appendChild(document.createTextNode(statement.text));
+                form.appendChild(label);
             });
-            questionContent.appendChild(statementsDiv);
-
+            
+            questionContent.appendChild(form);
+            updateQuestionCounter();
+            
+            // Update button states
             prevButton.disabled = currentQuestionIndex === 0;
-            if (currentQuestionIndex === questions.length - 1) {
-                nextButton.textContent = 'View Results';
-            } else {
-                nextButton.textContent = 'Next >';
-            }
+            nextButton.textContent = currentQuestionIndex === questions.length - 1 ? 'See Results' : 'Next';
+            nextButton.innerHTML = currentQuestionIndex === questions.length - 1 ? 'See Results <i class="fas fa-chart-bar"></i>' : 'Next <i class="fas fa-chevron-right"></i>';
+        }
+
+        function updateQuestionCounter() {
             questionCounterEl.textContent = `Question ${currentQuestionIndex + 1} of ${questions.length}`;
         }
 
         function handleNext(isAutoAdvance = false) {
-            clearTimeout(autoAdvanceTimeout); // Clear auto-advance if manually clicking next
-            if (answers[currentQuestionIndex] === null && !isAutoAdvance) { // Only validate for manual next click
-                validationMessage.textContent = 'Please select an option before proceeding.';
+            // If this is the last question and user hasn't answered, show validation message
+            if (currentQuestionIndex === questions.length - 1 && answers[currentQuestionIndex] === null) {
+                validationMessage.textContent = 'Please select an answer before continuing.';
                 validationMessage.classList.remove('hidden-view');
                 return;
             }
-             // If it's auto-advance, we assume an answer was just selected.
-            if (answers[currentQuestionIndex] === null && isAutoAdvance) {
-                // This case should ideally not happen if auto-advance is triggered by selection.
-                // But as a safeguard, don't proceed if no answer.
+            
+            // If user hasn't answered current question and this is not auto-advance, show validation
+            if (answers[currentQuestionIndex] === null && !isAutoAdvance) {
+                validationMessage.textContent = 'Please select an answer before continuing.';
+                validationMessage.classList.remove('hidden-view');
                 return;
             }
-
+            
             validationMessage.classList.add('hidden-view');
-
+            
             if (currentQuestionIndex < questions.length - 1) {
                 currentQuestionIndex++;
-                renderQuestion();
+                renderCurrentQuestion();
             } else {
                 switchView('results');
             }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
 
         function handlePrev() {
-            clearTimeout(autoAdvanceTimeout); // Clear auto-advance when going previous
-            validationMessage.classList.add('hidden-view');
             if (currentQuestionIndex > 0) {
                 currentQuestionIndex--;
-                renderQuestion();
+                renderCurrentQuestion();
+                validationMessage.classList.add('hidden-view');
             }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
         }
-        
+
         function getInterpretationByScore(score) {
             for (const item of scoreInterpretations) {
                 if (score >= item.range[0] && score <= item.range[1]) {
@@ -526,14 +1257,66 @@
             });
         }
 
+        function createColumnChart(score, maxScore) {
+            const columnChartEl = document.getElementById('columnChart');
+            columnChartEl.innerHTML = '';
+            const segments = [
+                { label: 'Minimal', maxScore: 13, color: '#00be61', range: '0-13', height: 80 },
+                { label: 'Mild', maxScore: 19, color: '#4c9aff', range: '14-19', height: 110 },
+                { label: 'Moderate', maxScore: 28, color: '#ffaa42', range: '20-28', height: 140 },
+                { label: 'Severe', maxScore: 63, color: '#ff5e6d', range: '29-63', height: 170 }
+            ];
+            segments.forEach(segment => {
+                // Bar container
+                const barContainer = document.createElement('div');
+                barContainer.style.display = 'flex';
+                barContainer.style.flexDirection = 'column';
+                barContainer.style.alignItems = 'center';
+                barContainer.style.width = '22%';
+                barContainer.style.margin = '0 1%';
+                // Range label above
+                const rangeLabel = document.createElement('div');
+                rangeLabel.style.marginBottom = '6px';
+                rangeLabel.style.fontWeight = '500';
+                rangeLabel.style.fontSize = '1rem';
+                rangeLabel.style.color = '#222';
+                rangeLabel.textContent = segment.range;
+                barContainer.appendChild(rangeLabel);
+                // Bar itself
+                const bar = document.createElement('div');
+                bar.style.height = segment.height + 'px';
+                bar.style.width = '100%';
+                bar.style.backgroundColor = segment.color;
+                bar.style.borderRadius = '4px 4px 0 0';
+                bar.style.marginBottom = '8px';
+                barContainer.appendChild(bar);
+                // Label below
+                const label = document.createElement('div');
+                label.style.marginTop = '2px';
+                label.style.fontWeight = '400';
+                label.style.fontSize = '1rem';
+                label.style.color = '#222';
+                label.textContent = segment.label;
+                barContainer.appendChild(label);
+                columnChartEl.appendChild(barContainer);
+            });
+            // Make the chart flex
+            columnChartEl.style.display = 'flex';
+            columnChartEl.style.alignItems = 'flex-end';
+            columnChartEl.style.justifyContent = 'space-around';
+            columnChartEl.style.height = '200px';
+            columnChartEl.style.margin = '0 10px';
+            columnChartEl.style.position = 'relative';
+        }
+
         function calculateAndShowResults() {
-            const totalScore = answers.reduce((sum, val) => sum + (val !== null ? val : 0), 0);
+            totalScore = answers.reduce((sum, val) => sum + (val !== null ? val : 0), 0);
             const maxPossibleScore = 63; // BDI-II max score
 
             scoreValueEl.textContent = `Your Score: ${totalScore} out of ${maxPossibleScore}`;
             
-            const result = getInterpretationByScore(totalScore);
-            scoreInterpretationEl.textContent = result.interpretation;
+            resultInterpretation = getInterpretationByScore(totalScore);
+            scoreInterpretationEl.textContent = resultInterpretation.interpretation;
             
             // Set color of interpretation text based on severity
             if (totalScore <= 13) {
@@ -546,44 +1329,11 @@
                 scoreInterpretationEl.style.color = '#ff5e6d'; // Severe
             }
 
-            scoreLevelsEl.innerHTML = ''; 
-            let cumulativeMaxScore = 0;
-            
-            scoreLevelVisuals.forEach(level => {
-                const barWrapper = document.createElement('div');
-                barWrapper.className = 'level-bar-wrapper';
-                const labelEl = document.createElement('div');
-                labelEl.className = 'level-label';
-                labelEl.textContent = level.label;
-                const barContainer = document.createElement('div');
-                barContainer.className = 'level-bar';
-                const fillEl = document.createElement('div');
-                fillEl.className = `level-fill ${level.class}`;
-                const levelRange = level.maxScore - cumulativeMaxScore;
-                const fillPercentage = (levelRange / maxPossibleScore) * 100;
-                fillEl.style.width = `${fillPercentage}%`;
-                fillEl.textContent = `${cumulativeMaxScore+1}-${level.maxScore}`;
-                
-                barContainer.appendChild(fillEl);
-                barWrapper.appendChild(labelEl);
-                barWrapper.appendChild(barContainer);
-                scoreLevelsEl.appendChild(barWrapper);
-                cumulativeMaxScore = level.maxScore;
-            });
-            
-            const markerPositionPercentage = (totalScore / maxPossibleScore) * 100;
-            // Ensure marker doesn't overflow its container visually if score is 0 or max
-            const clampedMarkerPosition = Math.max(0, Math.min(100, markerPositionPercentage));
+            // Create column chart instead of modern chart
+            createColumnChart(totalScore, maxPossibleScore);
 
-            yourScoreMarkerContainerEl.style.left = `calc(${clampedMarkerPosition}% - 2px)`; 
-            yourScoreTextEl.textContent = totalScore; 
-            
-            // Update marker color based on score (optional, if you want the marker itself to change color)
-            // yourScoreMarkerEl.className = `your-score-marker ${result.class}`;
-
-
-            populateInterpretationTable(); // Populate the new table
-            updateProgressBar(true); 
+            populateInterpretationTable(); // Populate the table
+            updateProgressBar(true);
         }
 
         function updateProgressBar(completed = false) {
@@ -591,8 +1341,6 @@
             if (completed) {
                 percentage = 100;
             } else {
-                // const answeredQuestions = answers.filter(a => a !== null).length;
-                // Base progress on the current question index to show progress even before an answer is locked in for current q
                 percentage = ((currentQuestionIndex) / questions.length) * 100;
                 if (answers[currentQuestionIndex] !== null) { // If current question is answered, count it fully
                     percentage = ((currentQuestionIndex + 1) / questions.length) * 100;
@@ -609,15 +1357,144 @@
             clearTimeout(autoAdvanceTimeout);
             switchView('intro');
         }
+        
+        // Updated capture preparation with column chart
+        function prepareResultsCapture() {
+            const segments = [
+                { label: 'Minimal', maxScore: 13, color: '#00be61', range: "0-13" },
+                { label: 'Mild', maxScore: 19, color: '#4c9aff', range: "14-19" },
+                { label: 'Moderate', maxScore: 28, color: '#ffaa42', range: "20-28" },
+                { label: 'Severe', maxScore: 63, color: '#ff5e6d', range: "29-63" }
+            ];
+            captureScoreValue.textContent = `Your Score: ${totalScore} out of 63`;
+            captureInterpretation.textContent = resultInterpretation.interpretation;
+            captureInterpretation.style.backgroundColor = '#d1fae5';
+            captureInterpretation.style.color = '#059669';
+            const now = new Date();
+            captureDate.textContent = now.toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+            // Render the chart inside #captureScoreLevels
+            const captureScoreLevels = document.getElementById('captureScoreLevels');
+            captureScoreLevels.innerHTML = '';
+            const columnChart = document.createElement('div');
+            columnChart.className = 'column-chart';
+            columnChart.style.height = '200px';
+            columnChart.style.margin = '0 10px';
+            columnChart.style.display = 'flex';
+            columnChart.style.alignItems = 'flex-end';
+            columnChart.style.justifyContent = 'space-around';
+            segments.forEach(segment => {
+                const barContainer = document.createElement('div');
+                barContainer.style.display = 'flex';
+                barContainer.style.flexDirection = 'column';
+                barContainer.style.alignItems = 'center';
+                barContainer.style.width = '22%';
+                barContainer.style.margin = '0 1%';
+                // Range label above
+                const rangeLabel = document.createElement('div');
+                rangeLabel.style.marginBottom = '6px';
+                rangeLabel.style.fontWeight = '500';
+                rangeLabel.style.fontSize = '1rem';
+                rangeLabel.style.color = '#222';
+                rangeLabel.textContent = segment.range;
+                barContainer.appendChild(rangeLabel);
+                // Bar itself
+                const bar = document.createElement('div');
+                bar.style.height = (segment.maxScore / 63 * 170 + 30) + 'px';
+                bar.style.width = '100%';
+                bar.style.backgroundColor = segment.color;
+                bar.style.borderRadius = '4px 4px 0 0';
+                bar.style.marginBottom = '8px';
+                barContainer.appendChild(bar);
+                // Label below
+                const label = document.createElement('div');
+                label.style.marginTop = '2px';
+                label.style.fontWeight = '400';
+                label.style.fontSize = '1rem';
+                label.style.color = '#222';
+                label.textContent = segment.label;
+                barContainer.appendChild(label);
+                columnChart.appendChild(barContainer);
+            });
+            captureScoreLevels.appendChild(columnChart);
+        }
 
-        // --- Event Listeners ---
+        // Function to generate image from results - fixed for download
+        async function generateResultImage() {
+            generateImageBtn.innerHTML = '<span class="loading-spinner"></span> Creating...';
+            generateImageBtn.disabled = true;
+            try {
+                prepareResultsCapture();
+                resultsCapture.style.position = 'absolute';
+                resultsCapture.style.top = '-9999px';
+                resultsCapture.style.left = '-9999px';
+                resultsCapture.classList.remove('hidden-view');
+                await new Promise(resolve => requestAnimationFrame(resolve));
+                await new Promise(resolve => setTimeout(resolve, 100));
+                const canvas = await html2canvas(resultsCapture, {
+                    scale: 3,
+                    backgroundColor: 'white',
+                    logging: false,
+                    useCORS: true
+                });
+                resultImageUrl = canvas.toDataURL('image/jpeg', 0.95);
+                resultsCapture.classList.add('hidden-view');
+                resultsCapture.style.position = '';
+                resultsCapture.style.top = '';
+                resultsCapture.style.left = '';
+                const link = document.createElement('a');
+                link.href = resultImageUrl;
+                link.download = `BDI-II_Results_${new Date().toISOString().split('T')[0]}.jpg`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                showToast('Results downloaded successfully!');
+                generateImageBtn.innerHTML = '<i class="fas fa-download"></i> Download Result';
+                generateImageBtn.disabled = false;
+            } catch (error) {
+                console.error('Error generating image:', error);
+                showToast('Failed to generate image. Please try again.');
+                generateImageBtn.innerHTML = '<i class="fas fa-download"></i> Download Result';
+                generateImageBtn.disabled = false;
+            }
+        }
+
+        // Function to copy test link to clipboard
+        function copyTestLink() {
+            const testUrl = window.location.href || 'https://example.com/bdi-assessment';
+            
+            navigator.clipboard.writeText(testUrl)
+                .then(() => {
+                    showToast('Test link copied to clipboard!');
+                })
+                .catch(err => {
+                    console.error('Failed to copy: ', err);
+                    showToast('Failed to copy link. Try again.');
+                });
+        }
+
+        // Updated event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add event listener for the new copy link button
+            document.getElementById('copyLinkBtn').addEventListener('click', copyTestLink);
+            
+            // Fix the download button
+            document.getElementById('generateImageBtn').addEventListener('click', generateResultImage);
+        });
+
+        // Event listeners
         startButton.addEventListener('click', () => switchView('questions'));
-        nextButton.addEventListener('click', () => handleNext(false)); // Explicitly false for manual next
+        nextButton.addEventListener('click', () => handleNext(false));
         prevButton.addEventListener('click', handlePrev);
         restartButton.addEventListener('click', restartQuiz);
+        backToQuestionsBtn.addEventListener('click', () => {
+            switchView('questions');
+        });
 
-        // --- Initial Setup ---
-        switchView('intro'); 
+        // Add event listener for the copy link button
+        const copyLinkBtn = document.getElementById('copyLinkBtn');
+        if (copyLinkBtn) {
+            copyLinkBtn.addEventListener('click', copyTestLink);
+        }
 
     </script>
 
